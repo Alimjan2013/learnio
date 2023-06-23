@@ -2,14 +2,19 @@ import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import {
   Card,
-  CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
-export default function Home() {
+export default async function Home() {
+  async function getData() {
+    const users = await prisma.public_words.findMany();
+    console.log(users);
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
@@ -37,6 +42,7 @@ export default function Home() {
         </div>
       </div>
       <Input />
+      <button>getData</button>
 
       <div className="mb-32 grid text-center lg:mb-0 lg:grid-cols-4 lg:text-left">
         <Card>
