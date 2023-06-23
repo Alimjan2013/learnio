@@ -1,20 +1,30 @@
 import Image from "next/image";
-import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import Dictation from "@/components/tool/dictation";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-
+type Word = {
+  word_id: number;
+  word: string;
+  translation: string;
+  primary_category: string;
+  secondary_category: string;
+};
 export default async function Home() {
+  let number = 1;
   async function getData() {
     const users = await prisma.public_words.findMany();
-    console.log(users);
+    console.log("我在第" + number + "次调用");
+    const wordList: Word[] = Array.from(users, (user) => ({
+      word_id: user.word_id,
+      word: user.word,
+      translation: user.translation,
+      primary_category: user.primary_category,
+      secondary_category: user.secondary_category,
+    }));
+    number++;
+    return wordList;
   }
-
+  const wordList = await getData();
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
@@ -41,41 +51,7 @@ export default async function Home() {
           </a>
         </div>
       </div>
-      <Input />
-      <button>getData</button>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              Docs{" "}
-              <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-                -&gt;
-              </span>
-            </CardTitle>
-            <CardDescription>
-              {" "}
-              Find in-depth information about Next.js features and API.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-      </div>
+      <Dictation wordList={wordList} />
     </main>
   );
 }
