@@ -5,10 +5,14 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui/wordBoard";
 import { useState } from "react";
 type Props = {
   wordList: Word[];
+};
+type TextCheckProps = {
+  word: Word;
+  next: any;
 };
 type Word = {
   word_id: number;
@@ -18,49 +22,85 @@ type Word = {
   secondary_category: string;
 };
 
-export default function Dictation(props: Props) {
-  let wordList = [...props.wordList];
-  const [currentWord, setCurrentWord] = useState<Word | undefined>(undefined);
+function CheckWords(props: TextCheckProps) {
   const [spelling, setSpelling] = useState("");
-
-  function pickRandomWord(words: Word[]): Word | undefined {
-    if (words.length === 0) return undefined;
-    const index = Math.floor(Math.random() * words.length);
-    setCurrentWord(words.splice(index, 1)[0]);
-    return currentWord;
-  }
-
-  console.log(props.wordList);
+  const handleChangeSpell = (event: any) => {
+    setSpelling(event.target.value);
+  };
+  let rightAnserList: Word[] = [];
+  let wrongAnserList: Word[] = [];
   const handleKeyPress = (event: any) => {
     if (event.keyCode === 13) {
-      if (spelling === currentWord?.word) {
-        pickRandomWord(wordList);
+      if (spelling === props.word.word) {
+        rightAnserList.push(props.word);
+      } else {
+        wrongAnserList.push(props.word);
       }
+      props.next();
       setSpelling("");
       console.log("Enter key pressed");
     }
   };
-  const handleChangeSpell = (event: any) => {
-    setSpelling(event.target.value);
+  return (
+    <Input
+      className="max-w-sm"
+      value={spelling}
+      onChange={handleChangeSpell}
+      onKeyDown={handleKeyPress}
+      placeholder="Type here"
+    ></Input>
+  );
+}
+
+export default function Dictation(props: Props) {
+  let wordList = props.wordList;
+  const [currentWord, setCurrentWord] = useState<Word | undefined>(undefined);
+  // let currentWord = wordList[0];
+  function pickRandomWord(words: Word[]): Word | undefined {
+    if (words.length === 0) return undefined;
+    const index = Math.floor(Math.random() * words.length);
+    const randomWord = words.splice(index, 1)[0];
+    speechAPI(randomWord.word);
+    // currentWord = randomWord;
+    setCurrentWord(randomWord);
+    return currentWord;
+  }
+
+  console.log(props.wordList);
+
+  const speechAPI = (word: string) => {
+    const speechSynthesis = window.speechSynthesis;
+
+    const utterance = new SpeechSynthesisUtterance(word);
+
+    utterance.voice = speechSynthesis.getVoices()[0];
+
+    utterance.addEventListener("start", () => {
+      console.log("Speech started");
+    });
+
+    utterance.addEventListener("end", () => {
+      console.log("Speech ended");
+    });
+
+    speechSynthesis.speak(utterance);
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Card>
+    <div className="w-full flex flex-col items-center justify-center space-y-8">
+      <Card className="w-80">
         <CardHeader>
           <CardTitle>{currentWord?.word}</CardTitle>
           <CardDescription>{currentWord?.translation}</CardDescription>
         </CardHeader>
       </Card>
-      <Input
-        value={spelling}
-        onChange={handleChangeSpell}
-        onKeyDown={handleKeyPress}
-        placeholder="Type here"
-      ></Input>
+      <CheckWords
+        word={currentWord as Word}
+        next={() => pickRandomWord(wordList)}
+      ></CheckWords>
       <button onClick={() => console.log(pickRandomWord(wordList))}>
         开始
       </button>
-    </main>
+    </div>
   );
 }
