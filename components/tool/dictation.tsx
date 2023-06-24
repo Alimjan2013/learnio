@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/wordBoard";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import {
   Table,
@@ -17,51 +17,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-const invoices = [
-  {
-    invoice: "INV001",
-    paymentStatus: "Paid",
-    totalAmount: "$250.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "INV002",
-    paymentStatus: "Pending",
-    totalAmount: "$150.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "INV003",
-    paymentStatus: "Unpaid",
-    totalAmount: "$350.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "INV004",
-    paymentStatus: "Paid",
-    totalAmount: "$450.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "INV005",
-    paymentStatus: "Paid",
-    totalAmount: "$550.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "INV006",
-    paymentStatus: "Pending",
-    totalAmount: "$200.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "INV007",
-    paymentStatus: "Unpaid",
-    totalAmount: "$300.00",
-    paymentMethod: "Credit Card",
-  },
-];
 
 export function TableDemo(props: TableProps) {
   return (
@@ -136,6 +91,38 @@ function CheckWords(props: TextCheckProps) {
     ></Input>
   );
 }
+
+type WordCardProps = {
+  word: Word;
+};
+export function WordCard(props: WordCardProps) {
+  const [isShow, setIsShow] = useState(false);
+  useEffect(() => {
+    handleShow();
+  }, [props.word]);
+
+  const handleShow = () => {
+    setIsShow(true);
+    setTimeout(() => {
+      setIsShow(false);
+    }, 1000);
+  };
+  let card;
+  if (props.word !== undefined) {
+    card = (
+      <CardHeader>
+        <CardTitle>
+          {isShow ? props.word.word : "*".repeat(props.word.word.length)}
+        </CardTitle>
+        <CardDescription>{props.word.translation}</CardDescription>
+      </CardHeader>
+    );
+  } else {
+    card = <></>;
+  }
+  return <Card className="w-80">{card}</Card>;
+}
+
 export default function Dictation(props: Props) {
   let wordList = props.wordList;
   console.log(wordList);
@@ -182,12 +169,13 @@ export default function Dictation(props: Props) {
 
   return (
     <div className="w-full flex flex-col items-center justify-center space-y-8">
-      <Card className="w-80">
+      <WordCard word={currentWord as Word}></WordCard>
+      {/* <Card className="w-80">
         <CardHeader>
           <CardTitle>{currentWord?.word}</CardTitle>
           <CardDescription>{currentWord?.translation}</CardDescription>
         </CardHeader>
-      </Card>
+      </Card> */}
       <CheckWords
         word={currentWord as Word}
         next={() => pickRandomWord(wordList)}
