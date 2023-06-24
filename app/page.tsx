@@ -1,4 +1,4 @@
-import Image from "next/image";
+import AuthForm from "./auth-form";
 import Dictation from "@/components/tool/dictation";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
@@ -27,6 +27,7 @@ export default async function Home() {
   const wordList = await getData();
   return (
     <main className="flex min-h-screen flex-col items-center justify-between md:p-24 p-8">
+      <AuthForm />
       <Dictation wordList={wordList} />
     </main>
   );
