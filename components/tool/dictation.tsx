@@ -21,7 +21,9 @@ import {
 export function TableDemo(props: TableProps) {
   return (
     <Table>
-      <TableCaption>A list of your Wrong answer.</TableCaption>
+      <TableCaption>
+        A list of your Wrong answer. Total:{props.wrongAnswerList.length}
+      </TableCaption>
       <TableHeader>
         <TableRow>
           <TableHead className="w-[100px]">ID</TableHead>
@@ -74,8 +76,15 @@ function CheckWords(props: TextCheckProps) {
 
   const handleKeyPress = (event: any) => {
     if (event.keyCode === 13) {
-      const isCorrect = spelling === props.word.word;
-      props.onAnswer(isCorrect, spelling);
+      const isCorrect = (spelling: string, word: string) => {
+        const wordOne = spelling.trim().toUpperCase();
+        const wordTwo = word.trim().toUpperCase();
+        if (wordOne === wordTwo) {
+          return true;
+        }
+        return false;
+      };
+      props.onAnswer(isCorrect(spelling, props.word.word), spelling);
       props.next();
       setSpelling("");
     }
