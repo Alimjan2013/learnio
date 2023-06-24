@@ -154,7 +154,7 @@ export default function Dictation(props: Props) {
     } else {
       const currentWordCopy = { ...currentWord } as Word;
       currentWordCopy.user_input = spelling;
-      setWrongAnswerList([...wrongAnswerList, currentWordCopy]);
+      setWrongAnswerList([currentWordCopy, ...wrongAnswerList]);
     }
   };
 
