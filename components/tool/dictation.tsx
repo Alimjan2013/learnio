@@ -46,9 +46,6 @@ export function TableDemo(props: TableProps) {
   );
 }
 
-type Props = {
-  wordList: Word[];
-};
 type TableProps = {
   wrongAnswerList: Word[];
 };
@@ -131,13 +128,32 @@ export function WordCard(props: WordCardProps) {
   }
   return <Card className="w-80">{card}</Card>;
 }
-
-export default function Dictation(props: Props) {
-  let wordList = props.wordList;
+let wordList: Word[] = [];
+export default function Dictation() {
   console.log(wordList);
   const [currentWord, setCurrentWord] = useState<Word | undefined>(undefined);
   const [rightAnswerList, setRightAnswerList] = useState<Word[]>([]);
   const [wrongAnswerList, setWrongAnswerList] = useState<Word[]>([]);
+  async function getData() {
+    const res = await fetch("/api/getwords");
+    // The return value is *not* serialized
+    // You can return Date, Map, Set, etc.
+
+    // Recommendation: handle errors
+    if (!res.ok) {
+      // This will activate the closest `error.js` Error Boundary
+      throw new Error("Failed to fetch data");
+    }
+
+    return res.json();
+  }
+
+  async function getWordList() {
+    const data = await getData();
+    wordList = data.data;
+    console.log(wordList);
+    pickRandomWord(wordList);
+  }
 
   function pickRandomWord(words: Word[]): Word | undefined {
     if (words.length === 0) return undefined;
@@ -191,7 +207,7 @@ export default function Dictation(props: Props) {
         onAnswer={handleAnswer}
       ></CheckWords>
       <TableDemo wrongAnswerList={wrongAnswerList}></TableDemo>
-      <button onClick={() => pickRandomWord(wordList)}>开始</button>
+      <button onClick={() => getWordList()}>开始</button>
     </div>
   );
 }
