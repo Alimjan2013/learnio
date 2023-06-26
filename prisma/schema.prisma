@@ -17,3 +17,11 @@ model public_words {
   primary_category   String
   secondary_category String
 }
+
+model word_list {
+  word_id            String @id
+  word               String
+  translation        String
+  primary_category   String
+  secondary_category String
+}

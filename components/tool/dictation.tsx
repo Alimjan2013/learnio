@@ -129,13 +129,23 @@ export function WordCard(props: WordCardProps) {
   return <Card className="w-80">{card}</Card>;
 }
 let wordList: Word[] = [];
-export default function Dictation() {
+export default function Dictation(props: { id: string }) {
   console.log(wordList);
   const [currentWord, setCurrentWord] = useState<Word | undefined>(undefined);
   const [rightAnswerList, setRightAnswerList] = useState<Word[]>([]);
   const [wrongAnswerList, setWrongAnswerList] = useState<Word[]>([]);
-  async function getData() {
-    const res = await fetch("/api/getwords");
+  async function getData(bookId: string) {
+    // const res = await fetch(`/api/getwords?bookId='+bookId`);
+
+    const res = await fetch("/api/getwords", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        bookId: bookId,
+      }),
+    });
     // The return value is *not* serialized
     // You can return Date, Map, Set, etc.
 
@@ -148,8 +158,8 @@ export default function Dictation() {
     return res.json();
   }
 
-  async function getWordList() {
-    const data = await getData();
+  async function getWordList(bookId: string) {
+    const data = await getData(bookId);
     wordList = data.data;
     console.log(wordList);
     pickRandomWord(wordList);
@@ -195,19 +205,13 @@ export default function Dictation() {
   return (
     <div className="w-full flex flex-col items-center justify-center space-y-8">
       <WordCard word={currentWord as Word}></WordCard>
-      {/* <Card className="w-80">
-        <CardHeader>
-          <CardTitle>{currentWord?.word}</CardTitle>
-          <CardDescription>{currentWord?.translation}</CardDescription>
-        </CardHeader>
-      </Card> */}
       <CheckWords
         word={currentWord as Word}
         next={() => pickRandomWord(wordList)}
         onAnswer={handleAnswer}
       ></CheckWords>
       <TableDemo wrongAnswerList={wrongAnswerList}></TableDemo>
-      <button onClick={() => getWordList()}>开始</button>
+      <button onClick={() => getWordList(props.id)}>开始</button>
     </div>
   );
 }
