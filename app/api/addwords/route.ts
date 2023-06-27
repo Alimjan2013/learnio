@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { nanoid } from "nanoid/non-secure";
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import { kv } from "@vercel/kv";
 
 type Word = {
   word_id: string;
@@ -39,9 +38,7 @@ export async function POST(request: Request) {
     res.secondary_category
   ) as Word[];
   console.log(wordList);
-  const words = await prisma.word_list.createMany({
-    data: wordList,
-    skipDuplicates: true,
-  });
+  const set = await kv.set("测试/章节五", wordList);
+  console.log(set);
   return NextResponse.json({ wordList });
 }
