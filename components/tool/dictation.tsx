@@ -18,6 +18,24 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+const speechAPI = (word: string) => {
+  const speechSynthesis = window.speechSynthesis;
+  const voices = speechSynthesis.getVoices();
+  const utterance = new SpeechSynthesisUtterance(word);
+  const voice = voices.find((v) => v.name.includes("Samantha"));
+  utterance.voice = voice as SpeechSynthesisVoice | null;
+
+  utterance.addEventListener("start", () => {
+    console.log("Speech started");
+  });
+
+  utterance.addEventListener("end", () => {
+    console.log("Speech ended");
+  });
+
+  speechSynthesis.speak(utterance);
+};
+
 export function TableDemo(props: TableProps) {
   return (
     <Table>
@@ -26,19 +44,26 @@ export function TableDemo(props: TableProps) {
       </TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[100px]">ID</TableHead>
+          {/* <TableHead className="w-[100px]">ID</TableHead> */}
           <TableHead>Word</TableHead>
           <TableHead>Wronganswer</TableHead>
           <TableHead>Translation</TableHead>
+          <TableHead>Sec_category</TableHead>
+          <TableHead>action</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {props.wrongAnswerList.map((word) => (
           <TableRow key={word.word_id}>
-            <TableCell className="font-medium">{word.word_id}</TableCell>
+            {/* <TableCell className="font-medium">{word.word_id}</TableCell> */}
             <TableCell>{word.word}</TableCell>
             <TableCell>{word.user_input}</TableCell>
             <TableCell>{word.translation}</TableCell>
+            <TableCell>{word.secondary_category}</TableCell>
+            <TableCell>
+              {" "}
+              <button onClick={() => speechAPI(word.word)}>play</button>{" "}
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>
@@ -182,24 +207,6 @@ export default function Dictation(props: { id: string }) {
       currentWordCopy.user_input = spelling;
       setWrongAnswerList([currentWordCopy, ...wrongAnswerList]);
     }
-  };
-
-  const speechAPI = (word: string) => {
-    const speechSynthesis = window.speechSynthesis;
-
-    const utterance = new SpeechSynthesisUtterance(word);
-
-    utterance.voice = speechSynthesis.getVoices()[0];
-
-    utterance.addEventListener("start", () => {
-      console.log("Speech started");
-    });
-
-    utterance.addEventListener("end", () => {
-      console.log("Speech ended");
-    });
-
-    speechSynthesis.speak(utterance);
   };
 
   return (
