@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { nanoid } from "nanoid/non-secure";
 import { kv } from "@vercel/kv";
+export const runtime = "edge";
 
 type Word = {
   word_id: string;
