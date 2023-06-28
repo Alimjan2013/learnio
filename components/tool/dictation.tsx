@@ -163,10 +163,6 @@ type WordCardProps = {
 };
 export function WordCard(props: WordCardProps) {
   const [isShow, setIsShow] = useState(false);
-  useEffect(() => {
-    handleShow();
-  }, [props.word]);
-
   const handleShow = () => {
     setIsShow(true);
     setTimeout(() => {
@@ -176,7 +172,11 @@ export function WordCard(props: WordCardProps) {
   let card;
   if (props.word !== undefined) {
     card = (
-      <CardHeader>
+      <CardHeader
+        onClick={() => {
+          handleShow();
+        }}
+      >
         <CardTitle>
           {isShow ? props.word.word : "*".repeat(props.word.word.length)}
         </CardTitle>
