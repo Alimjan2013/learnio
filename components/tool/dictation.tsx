@@ -1,5 +1,6 @@
 "use client";
 import { Input } from "@/components/ui/input";
+import { diffChars } from "diff";
 import {
   Card,
   CardDescription,
@@ -36,6 +37,11 @@ const speechAPI = (word: string) => {
   speechSynthesis.speak(utterance);
 };
 
+const getDifferences = (word1: string, word2: string) => {
+  const differences = diffChars(word1, word2);
+  return differences;
+};
+
 export function TableDemo(props: TableProps) {
   return (
     <Table>
@@ -45,8 +51,9 @@ export function TableDemo(props: TableProps) {
       <TableHeader>
         <TableRow>
           {/* <TableHead className="w-[100px]">ID</TableHead> */}
+          <TableHead>WrongSpealing</TableHead>
           <TableHead>Word</TableHead>
-          <TableHead>Wronganswer</TableHead>
+          <TableHead>diff</TableHead>
           <TableHead>Translation</TableHead>
           <TableHead>Sec_category</TableHead>
           <TableHead>action</TableHead>
@@ -55,14 +62,42 @@ export function TableDemo(props: TableProps) {
       <TableBody>
         {props.wrongAnswerList.map((word) => (
           <TableRow key={word.word_id}>
-            {/* <TableCell className="font-medium">{word.word_id}</TableCell> */}
-            <TableCell>{word.word}</TableCell>
             <TableCell>{word.user_input}</TableCell>
+            <TableCell>{word.word}</TableCell>
+            <TableCell>
+              <p>
+                {getDifferences(word.user_input as string, word.word).map(
+                  (part: any, index: any) => (
+                    <span
+                      key={index}
+                      className={
+                        part.added
+                          ? "text-green-600"
+                          : part.removed
+                          ? "text-orange-600 bg-red-200 px-0.5 rounded"
+                          : ""
+                      }
+                    >
+                      {part.value}
+                    </span>
+                  )
+                )}
+              </p>
+            </TableCell>
             <TableCell>{word.translation}</TableCell>
             <TableCell>{word.secondary_category}</TableCell>
             <TableCell>
               {" "}
-              <button onClick={() => speechAPI(word.word)}>play</button>{" "}
+              <button
+                onClick={() => {
+                  speechAPI(word.word),
+                    console.log(
+                      getDifferences(word.word, word.user_input as string)
+                    );
+                }}
+              >
+                play
+              </button>{" "}
             </TableCell>
           </TableRow>
         ))}
