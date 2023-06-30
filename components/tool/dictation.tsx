@@ -19,23 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const speechAPI = (word: string) => {
-  const speechSynthesis = window.speechSynthesis;
-  const voices = speechSynthesis.getVoices();
-  const utterance = new SpeechSynthesisUtterance(word);
-  const voice = voices.find((v) => v.name.includes("Samantha"));
-  utterance.voice = voice as SpeechSynthesisVoice | null;
-
-  utterance.addEventListener("start", () => {
-    console.log("Speech started");
-  });
-
-  utterance.addEventListener("end", () => {
-    console.log("Speech ended");
-  });
-
-  speechSynthesis.speak(utterance);
-};
+import { speechAPI } from "../../lib/utils";
 
 const getDifferences = (word1: string, word2: string) => {
   const differences = diffChars(word1, word2);
@@ -90,7 +74,7 @@ export function TableDemo(props: TableProps) {
               {" "}
               <button
                 onClick={() => {
-                  speechAPI(word.word),
+                  speechAPI(word.word, 1),
                     console.log(
                       getDifferences(word.word, word.user_input as string)
                     );
@@ -229,7 +213,7 @@ export default function Dictation(props: { id: string }) {
     if (words.length === 0) return undefined;
     const index = Math.floor(Math.random() * words.length);
     const randomWord = words.splice(index, 1)[0];
-    speechAPI(randomWord.word);
+    speechAPI(randomWord.word, 1);
     setCurrentWord(randomWord);
     return currentWord;
   }

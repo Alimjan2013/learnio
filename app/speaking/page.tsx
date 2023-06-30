@@ -1,6 +1,9 @@
 "use client";
 
 import { useCallback, useState, useEffect } from "react";
+import { speechAPI } from "../../lib/utils";
+
+const repeatNumber = 30;
 
 function ClickCount({ context }: { context: string }) {
   const [count, setCount] = useState(0);
@@ -38,12 +41,12 @@ function ClickCount({ context }: { context: string }) {
 
   // Function to increment count
   const increment = useCallback(() => {
-    if (count === 49) {
+    if (count === repeatNumber - 1) {
       setButtonName("打卡");
     }
-    if (count < 50) {
+    if (count < repeatNumber) {
       setCount((v) => v + 1);
-    } else if (count === 50) {
+    } else if (count === repeatNumber) {
       reset();
     }
   }, [count, setCount]);
@@ -56,7 +59,7 @@ function ClickCount({ context }: { context: string }) {
   }, [setCount]);
 
   // Calculate progress percentage
-  const progress = count >= 50 ? 100 : (count / 50) * 100;
+  const progress = count >= repeatNumber ? 100 : (count / repeatNumber) * 100;
 
   return (
     <div className="flex w-full items-center justify-center flex-col space-y-4">
@@ -113,6 +116,9 @@ export default function Home() {
         <div
           className="bg-slate-100 border border-slate-300 rounded-md p-2 mt-4 "
           key={index}
+          onClick={() => {
+            speechAPI(item, 0.9);
+          }}
         >
           <p className=" md:text-xl text-2xl ">{item}</p>
         </div>
