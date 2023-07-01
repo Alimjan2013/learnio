@@ -23,7 +23,41 @@ import { speechAPI } from "../../lib/utils";
 
 const getDifferences = (word1: string, word2: string) => {
   const differences = diffChars(word1, word2);
+  console.log(differences);
   return differences;
+};
+const checkIsMinorErorr = (differences: any[]) => {
+  const newArray = differences.map((obj, index) => ({
+    ...obj,
+    OrigenIndex: index,
+  }));
+  const filteredArray = newArray.filter((item) => item.count === 1);
+  let count = 0;
+  let indexs = [];
+  for (let i = 0; i < filteredArray.length; i++) {
+    if (filteredArray[i].removed === true) {
+      count++;
+      indexs.push(filteredArray[i]);
+    }
+    if (filteredArray[i].added === true) {
+      count++;
+      indexs.push(filteredArray[i]);
+    }
+  }
+  if (count === 1) {
+    return true;
+  }
+  if (count === 2) {
+    console.log("this is indexs");
+    console.log(indexs);
+    if (
+      indexs[0].OrigenIndex - indexs[1].OrigenIndex === 1 ||
+      indexs[0].OrigenIndex - indexs[1].OrigenIndex === -1
+    ) {
+      return true;
+    }
+  }
+  return false;
 };
 
 export function TableDemo(props: TableProps) {
@@ -45,7 +79,16 @@ export function TableDemo(props: TableProps) {
       </TableHeader>
       <TableBody>
         {props.wrongAnswerList.map((word) => (
-          <TableRow key={word.word_id}>
+          <TableRow
+            className={
+              checkIsMinorErorr(
+                getDifferences(word.user_input as string, word.word)
+              )
+                ? "bg-orange-50"
+                : ""
+            }
+            key={word.word_id}
+          >
             <TableCell>{word.user_input}</TableCell>
             <TableCell>{word.word}</TableCell>
             <TableCell>
