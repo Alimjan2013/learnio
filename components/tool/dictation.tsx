@@ -266,7 +266,7 @@ export function WordResultCard(props: TableProps) {
 
   return (
     <div className="w-full">
-      <div className="grid grid-rows-2 grid-flow-col gap-4">{card} </div>
+      <div className="grid grid-cols-2 gap-4">{card} </div>
 
       <p>A list of your Wrong answer. Total:{props.wrongAnswerList.length}</p>
     </div>
