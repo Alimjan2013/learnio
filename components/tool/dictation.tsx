@@ -89,7 +89,11 @@ export function TableDemo(props: TableProps) {
             }
             key={word.word_id}
           >
-            <TableCell>{word.user_input}</TableCell>
+            <TableCell>
+              <p className="underline decoration-dotted underline-offset-4 decoration-red-500">
+                {word.user_input}
+              </p>
+            </TableCell>
             <TableCell>{word.word}</TableCell>
             <TableCell>
               <p>
