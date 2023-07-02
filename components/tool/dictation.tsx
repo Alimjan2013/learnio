@@ -186,7 +186,7 @@ function CheckWords(props: TextCheckProps) {
 }
 
 type WordCardProps = {
-  word: Word;
+  word: Word | undefined;
 };
 export function WordCard(props: WordCardProps) {
   const [isShow, setIsShow] = useState(false);
@@ -211,9 +211,62 @@ export function WordCard(props: WordCardProps) {
       </CardHeader>
     );
   } else {
-    card = <></>;
+    card = (
+      <CardHeader>
+        <CardTitle>start please</CardTitle>
+        <CardDescription>请开始</CardDescription>
+      </CardHeader>
+    );
   }
   return <Card className="w-80">{card}</Card>;
+}
+
+export function WordResultCard(props: TableProps) {
+  let card;
+  if (props.wrongAnswerList.length === 0) {
+    return "";
+  }
+  card = props.wrongAnswerList.map((item) => (
+    <Card
+      className={
+        checkIsMinorErorr(getDifferences(item.user_input as string, item.word))
+          ? "border-4 border-orange-200"
+          : ""
+      }
+      key={item.word_id}
+    >
+      <CardHeader>
+        <CardTitle>{item.word as string}</CardTitle>
+        <CardDescription>{item.translation}</CardDescription>
+        <CardDescription>
+          {getDifferences(item.user_input as string, item.word).map(
+            (part: any, index: any) => (
+              <span
+                key={index}
+                className={
+                  part.added
+                    ? "text-green-600"
+                    : part.removed
+                    ? "text-orange-600 bg-red-200 px-0.5 rounded"
+                    : ""
+                }
+              >
+                {part.value}
+              </span>
+            )
+          )}
+        </CardDescription>
+      </CardHeader>
+    </Card>
+  ));
+
+  return (
+    <div className="w-full">
+      <div className="grid grid-rows-2 grid-flow-col gap-4">{card} </div>
+
+      <p>A list of your Wrong answer. Total:{props.wrongAnswerList.length}</p>
+    </div>
+  );
 }
 let wordList: Word[] = [];
 export default function Dictation(props: { id: string }) {
@@ -279,7 +332,12 @@ export default function Dictation(props: { id: string }) {
         next={() => pickRandomWord(wordList)}
         onAnswer={handleAnswer}
       ></CheckWords>
-      <TableDemo wrongAnswerList={wrongAnswerList}></TableDemo>
+      <div className="w-full hidden md:contents">
+        <TableDemo wrongAnswerList={wrongAnswerList}></TableDemo>
+      </div>
+      <div className="w-full md:hidden">
+        <WordResultCard wrongAnswerList={wrongAnswerList}></WordResultCard>
+      </div>
       <button onClick={() => getWordList(props.id)}>开始</button>
     </div>
   );
