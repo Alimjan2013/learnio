@@ -232,6 +232,9 @@ export function WordResultCard(props: TableProps) {
   }
   card = props.wrongAnswerList.map((item) => (
     <Card
+      onClick={() => {
+        speechAPI(item.word, 1);
+      }}
       className={
         checkIsMinorErorr(getDifferences(item.user_input as string, item.word))
           ? "border-4 border-orange-200"
