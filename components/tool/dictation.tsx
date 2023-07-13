@@ -1,6 +1,8 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import { diffChars } from "diff";
+import { Button } from "@/components/ui/button";
+
 import {
   Card,
   CardDescription,
@@ -345,7 +347,9 @@ export default function Dictation(props: { id: string }) {
       <div className="w-full md:hidden">
         <WordResultCard wrongAnswerList={wrongAnswerList}></WordResultCard>
       </div>
-      <button onClick={() => getWordList(props.id)}>开始</button>
+      <Button onClick={() => getWordList(props.id)} variant="outline">
+        开始
+      </Button>
     </div>
   );
 }
