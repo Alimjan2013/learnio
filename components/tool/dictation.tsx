@@ -2,6 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { diffChars } from "diff";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 
 import {
   Card,
@@ -25,7 +26,6 @@ import { speechAPI } from "../../lib/utils";
 
 const getDifferences = (word1: string, word2: string) => {
   const differences = diffChars(word1, word2);
-  console.log(differences);
   return differences;
 };
 const checkIsMinorErorr = (differences: any[]) => {
@@ -50,8 +50,6 @@ const checkIsMinorErorr = (differences: any[]) => {
     return true;
   }
   if (count === 2) {
-    console.log("this is indexs");
-    console.log(indexs);
     if (
       indexs[0].OrigenIndex - indexs[1].OrigenIndex === 1 ||
       indexs[0].OrigenIndex - indexs[1].OrigenIndex === -1
@@ -123,10 +121,7 @@ export function TableDemo(props: TableProps) {
               {" "}
               <button
                 onClick={() => {
-                  speechAPI(word.word, 1),
-                    console.log(
-                      getDifferences(word.word, word.user_input as string)
-                    );
+                  speechAPI(word.word, 1);
                 }}
               >
                 play
@@ -214,6 +209,7 @@ export function WordCard(props: WordCardProps) {
           {isShow ? props.word.word : "*".repeat(props.word.word.length)}
         </CardTitle>
         <CardDescription>{props.word.translation}</CardDescription>
+        <Progress value={(1 - wordList.length / wordListCopy.length) * 100} />
       </CardHeader>
     );
   } else {
@@ -278,14 +274,12 @@ export function WordResultCard(props: TableProps) {
   );
 }
 let wordList: Word[] = [];
+let wordListCopy: Word[] = [];
 export default function Dictation(props: { id: string }) {
-  console.log(wordList);
   const [currentWord, setCurrentWord] = useState<Word | undefined>(undefined);
   const [rightAnswerList, setRightAnswerList] = useState<Word[]>([]);
   const [wrongAnswerList, setWrongAnswerList] = useState<Word[]>([]);
   async function getData(bookId: string) {
-    // const res = await fetch(`/api/getwords?bookId='+bookId`);
-
     const res = await fetch("/api/getwords", {
       method: "POST",
       headers: {
@@ -295,12 +289,8 @@ export default function Dictation(props: { id: string }) {
         bookId: bookId,
       }),
     });
-    // The return value is *not* serialized
-    // You can return Date, Map, Set, etc.
 
-    // Recommendation: handle errors
     if (!res.ok) {
-      // This will activate the closest `error.js` Error Boundary
       throw new Error("Failed to fetch data");
     }
 
@@ -309,12 +299,14 @@ export default function Dictation(props: { id: string }) {
 
   async function getWordList(bookId: string) {
     const data = await getData(bookId);
-    wordList = data.data;
-    console.log(wordList);
+    wordList = [...data.data];
+    wordListCopy = [...data.data];
     pickRandomWord(wordList);
   }
 
   function pickRandomWord(words: Word[]): Word | undefined {
+    console.log(wordListCopy);
+    console.log(wordList);
     if (words.length === 0) return undefined;
     const index = Math.floor(Math.random() * words.length);
     const randomWord = words.splice(index, 1)[0];
@@ -347,7 +339,13 @@ export default function Dictation(props: { id: string }) {
       <div className="w-full md:hidden">
         <WordResultCard wrongAnswerList={wrongAnswerList}></WordResultCard>
       </div>
-      <Button onClick={() => getWordList(props.id)} variant="outline">
+      <Button
+        onClick={() => {
+          getWordList(props.id);
+          setWrongAnswerList([]);
+        }}
+        variant="outline"
+      >
         开始
       </Button>
     </div>
