@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { diffChars } from "diff";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { useTheme } from "next-themes";
 
 import {
   Card,
@@ -61,10 +62,13 @@ const checkIsMinorErorr = (differences: any[]) => {
 };
 
 export function WordTable(props: TableProps) {
+  const { resolvedTheme } = useTheme();
+
   return (
     <Table>
       <TableCaption>
-        A list of your Wrong answer. Total:{props.wrongAnswerList.length} ;{" "}
+        A list of your Wrong answer. Total:
+        {props.wrongAnswerList.length} ;{" "}
         {(
           (1 -
             props.wrongAnswerList.length /
@@ -90,7 +94,9 @@ export function WordTable(props: TableProps) {
               checkIsMinorErorr(
                 getDifferences(word.user_input as string, word.word)
               )
-                ? "bg-orange-50"
+                ? resolvedTheme === "dark"
+                  ? "bg-orange-50/[.3]"
+                  : "bg-orange-50"
                 : ""
             }
             key={word.word_id}
