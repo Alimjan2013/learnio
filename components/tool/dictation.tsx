@@ -60,11 +60,17 @@ const checkIsMinorErorr = (differences: any[]) => {
   return false;
 };
 
-export function TableDemo(props: TableProps) {
+export function WordTable(props: TableProps) {
   return (
     <Table>
       <TableCaption>
-        A list of your Wrong answer. Total:{props.wrongAnswerList.length}
+        A list of your Wrong answer. Total:{props.wrongAnswerList.length} ;{" "}
+        {(
+          (1 -
+            props.wrongAnswerList.length /
+              (wordListCopy.length - wordList.length)) *
+          100
+        ).toFixed(2)}
       </TableCaption>
       <TableHeader>
         <TableRow>
@@ -179,6 +185,7 @@ function CheckWords(props: TextCheckProps) {
     <Input
       className="max-w-sm"
       value={spelling}
+      disabled={wordList.length > 0 ? false : true}
       onChange={handleChangeSpell}
       onKeyDown={handleKeyPress}
       placeholder="Type here"
@@ -334,7 +341,7 @@ export default function Dictation(props: { id: string }) {
         onAnswer={handleAnswer}
       ></CheckWords>
       <div className="w-full hidden md:contents">
-        <TableDemo wrongAnswerList={wrongAnswerList}></TableDemo>
+        <WordTable wrongAnswerList={wrongAnswerList}></WordTable>
       </div>
       <div className="w-full md:hidden">
         <WordResultCard wrongAnswerList={wrongAnswerList}></WordResultCard>
