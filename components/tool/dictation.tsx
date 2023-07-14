@@ -4,6 +4,8 @@ import { diffChars } from "diff";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useTheme } from "next-themes";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "../../app/supabase";
 
 import {
   Card,
@@ -289,6 +291,39 @@ export function WordResultCard(props: TableProps) {
 let wordList: Word[] = [];
 let wordListCopy: Word[] = [];
 export default function Dictation(props: { id: string }) {
+  async function getUser() {
+    const supabase = createClientComponentClient<Database>();
+    const { data: session } = await supabase.auth.getSession();
+    console.log(session.session?.user.id);
+    return session.session?.user.id;
+  }
+  async function upDatePracticeLog() {
+    const userId = await getUser();
+    const wrongAnswerListCopy = wrongAnswerList;
+    const accuracyRate = (
+      (1 - wrongAnswerList.length / (wordListCopy.length - wordList.length)) *
+      100
+    ).toFixed(2);
+    const res = await fetch("https://exciting-ferret-34.deno.dev", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: userId,
+        wrongAnswerList: wrongAnswerListCopy,
+        accuracyRate: accuracyRate,
+      }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch data");
+    }
+
+    console.log(res.json());
+    return res.json();
+  }
+
   const [currentWord, setCurrentWord] = useState<Word | undefined>(undefined);
   const [rightAnswerList, setRightAnswerList] = useState<Word[]>([]);
   const [wrongAnswerList, setWrongAnswerList] = useState<Word[]>([]);
@@ -356,10 +391,19 @@ export default function Dictation(props: { id: string }) {
         onClick={() => {
           getWordList(props.id);
           setWrongAnswerList([]);
+          getUser();
         }}
         variant="outline"
       >
         开始
+      </Button>
+      <Button
+        onClick={() => {
+          upDatePracticeLog();
+        }}
+        variant="outline"
+      >
+        提交
       </Button>
     </div>
   );
