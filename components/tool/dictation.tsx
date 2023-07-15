@@ -3,9 +3,9 @@ import { Input } from "@/components/ui/input";
 import { diffChars } from "diff";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { useTheme } from "next-themes";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "../../app/supabase";
+import WordTable from "@/components/tool/wordTable";
 
 import {
   Card,
@@ -13,17 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/wordBoard";
-import { useState, useEffect } from "react";
-
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { useState } from "react";
 
 import { speechAPI } from "../../lib/utils";
 
@@ -62,91 +52,6 @@ const checkIsMinorErorr = (differences: any[]) => {
   }
   return false;
 };
-
-export function WordTable(props: TableProps) {
-  const { resolvedTheme } = useTheme();
-
-  return (
-    <Table>
-      <TableCaption>
-        A list of your Wrong answer. Total:
-        {props.wrongAnswerList.length} ;{" "}
-        {(
-          (1 -
-            props.wrongAnswerList.length /
-              (wordListCopy.length - wordList.length)) *
-          100
-        ).toFixed(2)}
-      </TableCaption>
-      <TableHeader>
-        <TableRow>
-          {/* <TableHead className="w-[100px]">ID</TableHead> */}
-          <TableHead>WrongSpealing</TableHead>
-          <TableHead>Word</TableHead>
-          <TableHead>diff</TableHead>
-          <TableHead>Translation</TableHead>
-          <TableHead>Sec_category</TableHead>
-          <TableHead>action</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {props.wrongAnswerList.map((word) => (
-          <TableRow
-            className={
-              checkIsMinorErorr(
-                getDifferences(word.user_input as string, word.word)
-              )
-                ? resolvedTheme === "dark"
-                  ? "bg-orange-50/[.3]"
-                  : "bg-orange-50"
-                : ""
-            }
-            key={word.word_id}
-          >
-            <TableCell>
-              <p className="underline decoration-dotted underline-offset-4 decoration-red-500">
-                {word.user_input}
-              </p>
-            </TableCell>
-            <TableCell>{word.word}</TableCell>
-            <TableCell>
-              <p>
-                {getDifferences(word.user_input as string, word.word).map(
-                  (part: any, index: any) => (
-                    <span
-                      key={index}
-                      className={
-                        part.added
-                          ? "text-green-600"
-                          : part.removed
-                          ? "text-orange-600 bg-red-200 px-0.5 rounded"
-                          : ""
-                      }
-                    >
-                      {part.value}
-                    </span>
-                  )
-                )}
-              </p>
-            </TableCell>
-            <TableCell>{word.translation}</TableCell>
-            <TableCell>{word.secondary_category}</TableCell>
-            <TableCell>
-              {" "}
-              <button
-                onClick={() => {
-                  speechAPI(word.word, 1);
-                }}
-              >
-                play
-              </button>{" "}
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-}
 
 type TableProps = {
   wrongAnswerList: Word[];
@@ -321,7 +226,7 @@ export default function Dictation(props: { id: string }) {
       throw new Error("Failed to fetch data");
     }
 
-    console.log(res.json());
+    console.log(res);
     return res.json();
   }
 
@@ -383,7 +288,17 @@ export default function Dictation(props: { id: string }) {
         onAnswer={handleAnswer}
       ></CheckWords>
       <div className="w-full hidden md:contents">
-        <WordTable wrongAnswerList={wrongAnswerList}></WordTable>
+        <WordTable
+          wrongAnswerList={wrongAnswerList}
+          accuracyRate={parseFloat(
+            (
+              (1 -
+                wrongAnswerList.length /
+                  (wordListCopy.length - wordList.length)) *
+              100
+            ).toFixed(2)
+          )}
+        ></WordTable>
       </div>
       <div className="w-full md:hidden">
         <WordResultCard wrongAnswerList={wrongAnswerList}></WordResultCard>
@@ -398,14 +313,18 @@ export default function Dictation(props: { id: string }) {
       >
         开始
       </Button>
-      <Button
-        onClick={() => {
-          upDatePracticeLog();
-        }}
-        variant="outline"
-      >
-        提交
-      </Button>
+      {wordList.length > 0 ? (
+        ""
+      ) : (
+        <Button
+          onClick={() => {
+            upDatePracticeLog();
+          }}
+          variant="outline"
+        >
+          提交
+        </Button>
+      )}
     </div>
   );
 }
