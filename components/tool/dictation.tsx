@@ -304,8 +304,8 @@ export default function Dictation(props: { id: string }) {
       (1 - wrongAnswerList.length / (wordListCopy.length - wordList.length)) *
       100
     ).toFixed(2);
-    const res = await fetch("https://exciting-ferret-34.deno.dev", {
-      method: "GET",
+    const res = await fetch("/api/practiceLog/savePracticeLog", {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
@@ -313,6 +313,7 @@ export default function Dictation(props: { id: string }) {
         userId: userId,
         wrongAnswerList: wrongAnswerListCopy,
         accuracyRate: accuracyRate,
+        name: "hello",
       }),
     });
 
