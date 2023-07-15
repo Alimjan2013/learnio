@@ -20,9 +20,25 @@ import {
 } from "@/components/ui/table";
 import WordTable from "@/components/tool/wordTable";
 
+type Word = {
+  word_id: number;
+  word: string;
+  translation: string;
+  primary_category: string;
+  secondary_category: string;
+  user_input?: string;
+};
+
+type Log = {
+  id: string;
+  created_at: string;
+  wrong_answer_list: [Word];
+  accuracy_rate: number;
+};
+
 export default function AccountForm({ session }: { session: Session | null }) {
   const [loading, setLoading] = useState(true);
-  const [practiceLog, setPracticeLog] = useState([]);
+  const [practiceLog, setPracticeLog] = useState<Log[]>([]);
   const user = session?.user.id;
 
   const getProfile = useCallback(async () => {
