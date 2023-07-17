@@ -8,7 +8,7 @@ const config = new Configuration({
 const openai = new OpenAIApi(config);
 
 // Set the runtime to edge for best performance
-// export const runtime = "edge";
+export const runtime = "edge";
 
 export async function POST(req: Request) {
   const { prompt } = await req.json();
@@ -18,14 +18,24 @@ export async function POST(req: Request) {
     model: "text-davinci-003",
     stream: true,
     temperature: 0.6,
-    prompt: `Create three slogans for a business with unique features.
- 
-Business: Bookstore with cats
-Slogans: "Purr-fect Pages", "Books and Whiskers", "Novels and Nuzzles"
-Business: Gym with rock climbing
-Slogans: "Peak Performance", "Reach New Heights", "Climb Your Way Fit"
-Business: ${prompt}
-Slogans:`,
+    prompt: `As an English teacher, you need help students check their grammar in sentence. 
+    this is Output Rule: 	
+    * Identify the incorrect part within parentheses ().
+    * Replace it with the correct word or phrase within brackets 【】.
+    * Identify any unnecessary words or phrases within <>.
+    * Try not to modify too many consecutive parts at once.
+    
+    
+    For example: 
+    
+    Student: Many students who graduate from university don't know how to manage money, and there is the reason that they have not recieved enough knowledge from economic education. 
+    
+    Teacher output: Many students who graduate from university don't know how to manage money, and there (is the reason that)【because】 they have not (recieved)【received】 enough <knowledge from> (economic)【financial】 education. 
+    
+    ———
+    This is sentence from student:
+    Student: ${prompt}
+    Teacher output:`,
   });
   // Convert the response into a friendly text-stream
   const stream = OpenAIStream(response);
