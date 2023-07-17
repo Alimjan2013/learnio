@@ -23,9 +23,9 @@ export default function Home() {
     localStorage.setItem("text", newText);
   };
 
-  const handleChangeWriting = (event: any) => {
-    const newText = event.target.value;
-    setWriting(newText);
+  const handleChangeWriting = (newText: any) => {
+    // const newText = event.target.value;
+    // setWriting(newText);
     const result = newText
       .split(/(【.*?】)|(\(.*?\))|<.*?>/)
       .filter((part: any) => part)
@@ -45,20 +45,20 @@ export default function Home() {
     setDeffScript(result);
   };
 
-  // Create divs for each line of text
-  const textDivs = text
-    ? text.split("\n").map((item, index) => (
-        <div
-          className="bg-slate-100 border border-slate-300 rounded-md p-2 mt-4 "
-          key={index}
-          onClick={() => {
-            speechAPI(item, 0.9);
-          }}
-        >
-          <p className=" md:text-xl text-2xl ">{item}</p>
-        </div>
-      ))
-    : [];
+  async function getResult() {
+    const res = await fetch("https://slow-zebra-29.deno.dev", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt: writing,
+      }),
+    });
+    const result = await res.json();
+    handleChangeWriting(result.choices[0].message.content);
+    console.log(result);
+  }
 
   return (
     <main className=" space-y-5 container mx-auto px-4">
@@ -90,8 +90,9 @@ export default function Home() {
           invalid:border-pink-500 invalid:text-pink-600
           focus:invalid:border-pink-500 focus:invalid:ring-pink-500"
         value={writing}
-        onChange={handleChangeWriting}
+        onChange={(event) => setWriting(event?.target.value)}
       />
+      <button onClick={() => getResult()}> check </button>
     </main>
   );
 }
