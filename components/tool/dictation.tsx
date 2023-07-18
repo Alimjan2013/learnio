@@ -1,6 +1,5 @@
 "use client";
 import { Input } from "@/components/ui/input";
-import { diffChars } from "diff";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
@@ -17,46 +16,6 @@ import {
 import { useState } from "react";
 
 import { speechAPI } from "../../lib/utils";
-
-const getDifferences = (word1: string, word2: string) => {
-  const differences = diffChars(word1, word2);
-  return differences;
-};
-const checkIsMinorErorr = (differences: any[]) => {
-  const newArray = differences.map((obj, index) => ({
-    ...obj,
-    OrigenIndex: index,
-  }));
-  const filteredArray = newArray.filter((item) => item.count === 1);
-  let count = 0;
-  let indexs = [];
-  for (let i = 0; i < filteredArray.length; i++) {
-    if (filteredArray[i].removed === true) {
-      count++;
-      indexs.push(filteredArray[i]);
-    }
-    if (filteredArray[i].added === true) {
-      count++;
-      indexs.push(filteredArray[i]);
-    }
-  }
-  if (count === 1) {
-    return true;
-  }
-  if (count === 2) {
-    if (
-      indexs[0].OrigenIndex - indexs[1].OrigenIndex === 1 ||
-      indexs[0].OrigenIndex - indexs[1].OrigenIndex === -1
-    ) {
-      return true;
-    }
-  }
-  return false;
-};
-
-type TableProps = {
-  wrongAnswerList: Word[];
-};
 
 type TextCheckProps = {
   word: Word;
@@ -144,56 +103,6 @@ export function WordCard(props: WordCardProps) {
   return <Card className="w-80">{card}</Card>;
 }
 
-export function WordResultCard(props: TableProps) {
-  let card;
-  if (props.wrongAnswerList.length === 0) {
-    return "";
-  }
-  card = props.wrongAnswerList.map((item) => (
-    <Card
-      onClick={() => {
-        speechAPI(item.word, 1);
-      }}
-      className={
-        checkIsMinorErorr(getDifferences(item.user_input as string, item.word))
-          ? "border-4 border-orange-200"
-          : ""
-      }
-      key={item.word_id}
-    >
-      <CardHeader>
-        <CardTitle>{item.word as string}</CardTitle>
-        <CardDescription>{item.translation}</CardDescription>
-        <CardDescription>
-          {getDifferences(item.user_input as string, item.word).map(
-            (part: any, index: any) => (
-              <span
-                key={index}
-                className={
-                  part.added
-                    ? "text-green-600"
-                    : part.removed
-                    ? "text-orange-600 bg-red-200 px-0.5 rounded"
-                    : ""
-                }
-              >
-                {part.value}
-              </span>
-            )
-          )}
-        </CardDescription>
-      </CardHeader>
-    </Card>
-  ));
-
-  return (
-    <div className="w-full">
-      <div className="grid grid-cols-2 gap-4">{card} </div>
-
-      <p>A list of your Wrong answer. Total:{props.wrongAnswerList.length}</p>
-    </div>
-  );
-}
 let wordList: Word[] = [];
 let wordListCopy: Word[] = [];
 export default function Dictation(props: { id: string }) {
@@ -290,22 +199,17 @@ export default function Dictation(props: { id: string }) {
         next={() => pickRandomWord(wordList)}
         onAnswer={handleAnswer}
       ></CheckWords>
-      <div className="w-full hidden md:contents">
-        <WordTable
-          wrongAnswerList={wrongAnswerList}
-          accuracyRate={parseFloat(
-            (
-              (1 -
-                wrongAnswerList.length /
-                  (wordListCopy.length - wordList.length)) *
-              100
-            ).toFixed(2)
-          )}
-        ></WordTable>
-      </div>
-      <div className="w-full md:hidden">
-        <WordResultCard wrongAnswerList={wrongAnswerList}></WordResultCard>
-      </div>
+      <WordTable
+        wrongAnswerList={wrongAnswerList}
+        accuracyRate={parseFloat(
+          (
+            (1 -
+              wrongAnswerList.length /
+                (wordListCopy.length - wordList.length)) *
+            100
+          ).toFixed(2)
+        )}
+      ></WordTable>
       <Button
         onClick={() => {
           getWordList(props.id);
