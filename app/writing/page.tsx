@@ -1,26 +1,14 @@
 "use client";
 
 import { useCallback, useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 export default function Home() {
   const [text, setText] = useState("");
   const [writing, setWriting] = useState("");
   const [deffScript, setDeffScript] = useState<any>([]);
-
-  // Read text value from local storage
-  useEffect(() => {
-    const storedText = localStorage.getItem("text");
-    if (storedText) {
-      setText(storedText);
-    }
-  }, []);
-
-  // Function to handle text change
-  const handleChange = (event: any) => {
-    const newText = event.target.value;
-    setText(newText);
-    localStorage.setItem("text", newText);
-  };
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChangeWriting = (newText: any) => {
     // const newText = event.target.value;
@@ -45,6 +33,7 @@ export default function Home() {
   };
 
   async function getResult() {
+    setIsLoading(true);
     const res = await fetch("https://slow-zebra-29.deno.dev", {
       method: "POST",
       headers: {
@@ -55,14 +44,17 @@ export default function Home() {
       }),
     });
     const result = await res.json();
+    if (res.ok) {
+      setIsLoading(false);
+    }
     handleChangeWriting(result.choices[0].message.content);
     console.log(result);
   }
 
   return (
-    <main className=" space-y-5 container mx-auto px-4">
+    <main className=" space-y-4 container mx-auto px-4 pt-4">
       <h1 className="text-3xl font-bold text-center text-gray-600">
-        Diff-Script
+        Grammar check
       </h1>
 
       <div className="bg-slate-50 border border-slate-300 rounded-md p-2 mt-4 ">
@@ -91,7 +83,14 @@ export default function Home() {
         value={writing}
         onChange={(event) => setWriting(event?.target.value)}
       />
-      <button onClick={() => getResult()}> check </button>
+      <Button
+        variant="outline"
+        disabled={isLoading}
+        onClick={() => getResult()}
+      >
+        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : ""}
+        check
+      </Button>
     </main>
   );
 }

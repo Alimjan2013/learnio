@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "../../app/supabase";
 import WordTable from "@/components/tool/wordTable";
+import { Loader2 } from "lucide-react";
 
 import {
   Card,
@@ -196,6 +197,7 @@ export function WordResultCard(props: TableProps) {
 let wordList: Word[] = [];
 let wordListCopy: Word[] = [];
 export default function Dictation(props: { id: string }) {
+  const [isLoading, setIsLoading] = useState(false);
   async function getUser() {
     const supabase = createClientComponentClient<Database>();
     const { data: session } = await supabase.auth.getSession();
@@ -203,6 +205,7 @@ export default function Dictation(props: { id: string }) {
     return session.session?.user.id;
   }
   async function upDatePracticeLog() {
+    setIsLoading(true);
     const userId = await getUser();
     const wrongAnswerListCopy = wrongAnswerList;
     const accuracyRate = (
@@ -225,7 +228,7 @@ export default function Dictation(props: { id: string }) {
     if (!res.ok) {
       throw new Error("Failed to fetch data");
     }
-
+    setIsLoading(false);
     console.log(res);
     return res.json();
   }
@@ -317,11 +320,11 @@ export default function Dictation(props: { id: string }) {
         ""
       ) : (
         <Button
-          onClick={() => {
-            upDatePracticeLog();
-          }}
           variant="outline"
+          disabled={isLoading}
+          onClick={() => upDatePracticeLog()}
         >
+          {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : ""}
           提交
         </Button>
       )}
