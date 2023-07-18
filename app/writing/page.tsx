@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useState, useEffect } from "react";
-import { speechAPI } from "../../lib/utils";
 
 export default function Home() {
   const [text, setText] = useState("");
