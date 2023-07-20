@@ -34,7 +34,7 @@ export default function Home() {
 
   async function getResult() {
     setIsLoading(true);
-    const res = await fetch("https://slow-zebra-29.deno.dev", {
+    const res = await fetch("/api/completion", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
