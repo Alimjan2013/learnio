@@ -34,7 +34,7 @@ export default function Home() {
 
   async function getResult() {
     setIsLoading(true);
-    const res = await fetch("/api/completion", {
+    const res = await fetch("/api/completion_fetch", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
