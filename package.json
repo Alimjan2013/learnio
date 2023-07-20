@@ -30,6 +30,7 @@
     "class-variance-authority": "^0.6.0",
     "clsx": "^1.2.1",
     "diff": "^5.1.0",
+    "encoding": "^0.1.13",
     "eslint": "8.43.0",
     "eslint-config-next": "^13.4.9",
     "lucide-react": "^0.252.0",
