@@ -6,6 +6,8 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "../../app/supabase";
 import WordTable from "@/components/tool/wordTable";
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast"
+
 
 import {
   Card,
@@ -106,6 +108,8 @@ export function WordCard(props: WordCardProps) {
 let wordList: Word[] = [];
 let wordListCopy: Word[] = [];
 export default function Dictation(props: { id: string }) {
+  const { toast } = useToast()
+
   const [isLoading, setIsLoading] = useState(false);
   async function getUser() {
     const supabase = createClientComponentClient<Database>();
@@ -137,6 +141,10 @@ export default function Dictation(props: { id: string }) {
     if (!res.ok) {
       throw new Error("Failed to fetch data");
     }
+    toast({
+      title: "successful update",
+      description: "已成功提交到听写列表",
+    })
     setIsLoading(false);
     console.log(res);
     return res.json();
