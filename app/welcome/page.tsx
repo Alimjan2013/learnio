@@ -1,49 +1,11 @@
 
-import { BellRing, Check } from "lucide-react"
 import Link from 'next/link'
-
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import {
-    Card,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-
-
-type CardProps = React.ComponentProps<typeof Card>
-interface FuncCardProps extends React.HTMLAttributes<HTMLDivElement> {
-    title: string;
-    description?: string;
-    link: string
-}
-
-export function FuncCard({ title, description, link, className, ...props }: FuncCardProps) {
-    return (
-        <Card className={cn("w-[380px]", className)} {...props}>
-            <CardHeader>
-                <CardTitle>{title}</CardTitle>
-                <CardDescription>{description}</CardDescription>
-            </CardHeader>
-
-            <CardFooter>
-                <Link  className="w-full" href={`/${link}`}>
-                    <Button disabled={link==='...'?true:false} className="w-full">
-                        Vist
-                    </Button>
-                </Link>
-
-            </CardFooter>
-        </Card>
-
-    )
-}
+import FuncCard from './FuncCard'
 
 
 
-export default async function Welcome() {
+
+export default function Welcome() {
     // const wordList = await getData();
     return (
         <div className="md:py-5 space-y-8">
