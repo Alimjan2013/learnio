@@ -79,7 +79,8 @@ export default function AccountForm({ session }: { session: Session | null }) {
           <TableRow>
             {/* <TableHead className="w-[100px]">ID</TableHead> */}
             <TableHead>Date</TableHead>
-            <TableHead>Number</TableHead>
+            <TableHead>total number</TableHead>
+            <TableHead>issue number</TableHead>
             <TableHead>accuracyRate</TableHead>
             <TableHead>details</TableHead>
           </TableRow>
@@ -95,9 +96,10 @@ export default function AccountForm({ session }: { session: Session | null }) {
                     .replace(/\..+/, "")}
                 </p>
               </TableCell>
+              <TableCell>{log.wrong_answer_list.length / (log.accuracy_rate/100)}</TableCell>
               <TableCell>{log.wrong_answer_list.length}</TableCell>
               <TableCell>
-                <p>{log.accuracy_rate}%</p>
+                <p>{log.accuracy_rate}%%</p>
               </TableCell>
               <TableCell>
                 <Dialog>

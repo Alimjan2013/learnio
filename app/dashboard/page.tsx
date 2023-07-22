@@ -1,7 +1,6 @@
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { Database } from "../supabase";
-import AccountForm from "./account-form";
 import PracticeLog from "./PracticeLog";
 
 export default async function Account() {
@@ -13,7 +12,6 @@ export default async function Account() {
 
   return (
     <div>
-      {/* <AccountForm session={session} /> */}
       <PracticeLog session={session} />
     </div>
   );

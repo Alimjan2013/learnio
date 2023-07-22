@@ -9,7 +9,7 @@ export async function POST(request) {
     .from("practiceLog")
     .select("*")
     .eq("user_id", res.userId);
-  console.log(data);
+  // console.log(data);
 
   return NextResponse.json(data);
 }
