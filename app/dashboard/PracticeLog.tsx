@@ -96,10 +96,10 @@ export default function AccountForm({ session }: { session: Session | null }) {
                     .replace(/\..+/, "")}
                 </p>
               </TableCell>
-              <TableCell>{log.wrong_answer_list.length / (log.accuracy_rate/100)}</TableCell>
+              <TableCell>{Math.ceil(log.wrong_answer_list.length /( 1- (log.accuracy_rate/100)))}</TableCell>
               <TableCell>{log.wrong_answer_list.length}</TableCell>
               <TableCell>
-                <p>{log.accuracy_rate}%%</p>
+                <p>{log.accuracy_rate}%</p>
               </TableCell>
               <TableCell>
                 <Dialog>
