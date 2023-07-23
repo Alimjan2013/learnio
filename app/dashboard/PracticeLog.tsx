@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { Session } from "@supabase/auth-helpers-nextjs";
+import { DualAxes } from "@antv/g2plot";
 import {
   Dialog,
   DialogContent,
@@ -29,16 +30,18 @@ type Word = {
   user_input?: string;
 };
 
-type Log = {
+type LogList = {
   id: string;
-  created_at: string;
+  created_at: Date;
   wrong_answer_list: [Word];
+  wrong_answer_number: number;
   accuracy_rate: number;
+  total_number: number;
 };
 
 export default function AccountForm({ session }: { session: Session | null }) {
   const [loading, setLoading] = useState(true);
-  const [practiceLog, setPracticeLog] = useState<Log[]>([]);
+  const [practiceLog, setPracticeLog] = useState<LogList[]>([]);
   const user = session?.user.id;
 
   const getProfile = useCallback(async () => {
@@ -57,9 +60,31 @@ export default function AccountForm({ session }: { session: Session | null }) {
       if (!res.ok) {
         throw new Error("Failed to fetch data");
       }
+
       const LogList = await res.json();
-      setPracticeLog(LogList);
-      console.log(LogList);
+
+      const logListArray: LogList[] = LogList.map((log: any) => {
+        const created_at = new Date(log.created_at);
+
+        const wrong_answer_number = log.wrong_answer_list.length;
+
+        const total_number = Math.ceil(
+          log.wrong_answer_list.length / (1 - log.accuracy_rate / 100)
+        );
+
+        return {
+          id: log.id,
+          created_at,
+          wrong_answer_list: log.wrong_answer_list,
+          wrong_answer_number,
+          accuracy_rate: log.accuracy_rate,
+          total_number,
+        };
+      });
+
+      creatChart(logListArray);
+
+      setPracticeLog(logListArray);
     } catch (error) {
       alert("Error loading user data!");
     } finally {
@@ -67,9 +92,75 @@ export default function AccountForm({ session }: { session: Session | null }) {
     }
   }, [user]);
 
+  const creatChart = (logListArray: LogList[]) => {
+    const data1 = logListArray;
+    const combinedData = [];
+
+    // Iterate through the data array
+    for (let i = 0; i < data1.length; i++) {
+      const currentDate = new Date(data1[i].created_at).toDateString();
+
+      // Check if the current date already exists in the combinedData array
+      const existingDataIndex = combinedData.findIndex(
+        (item) => new Date(item.created_at).toDateString() === currentDate
+      );
+
+      // If the current date exists, update the total_number and accuracy_rate
+      if (existingDataIndex !== -1) {
+        combinedData[existingDataIndex].total_number += data1[i].total_number;
+        combinedData[existingDataIndex].accuracy_rate += data1[i].accuracy_rate;
+      } else {
+        // If the current date doesn't exist, create a new object
+        combinedData.push({
+          created_at: data1[i].created_at.toDateString(),
+          total_number: data1[i].total_number,
+          accuracy_rate: data1[i].accuracy_rate,
+        });
+      }
+    }
+
+    // Calculate the average accuracy_rate
+    combinedData.forEach((item) => {
+      item.accuracy_rate /= logListArray.filter(
+        (log) => new Date(log.created_at).toDateString() === item.created_at
+      ).length;
+    });
+    console.log(combinedData);
+    const data: any = combinedData;
+    const line = new DualAxes("container", {
+      data: [data, data],
+      xField: "created_at",
+      yField: ["total_number", "accuracy_rate"],
+      geometryOptions: [
+        {
+          geometry: "line",
+          color: "#5B8FF9",
+        },
+        {
+          geometry: "line",
+          color: "#5AD8A6",
+        },
+      ],
+    });
+
+    line.render();
+  };
+
   useEffect(() => {
     getProfile();
   }, [user]);
+
+  const data = [
+    { year: "1991", value: 3 },
+    { year: "1992", value: 4 },
+    { year: "1993", value: 3.5 },
+    { year: "1994", value: 5 },
+    { year: "1995", value: 4.9 },
+    { year: "1996", value: 6 },
+    { year: "1997", value: 7 },
+    { year: "1998", value: 9 },
+    { year: "1999", value: 13 },
+  ];
 
   return (
     <div className="form-widget">
@@ -90,14 +181,12 @@ export default function AccountForm({ session }: { session: Session | null }) {
             <TableRow key={log.id}>
               <TableCell>
                 <p>
-                  {new Date(log.created_at)
-                    .toISOString()
-                    .replace(/T/, " ")
-                    .replace(/\..+/, "")}
+                  {log.created_at.toDateString()}{" "}
+                  {log.created_at.toLocaleTimeString()}
                 </p>
               </TableCell>
-              <TableCell>{Math.ceil(log.wrong_answer_list.length /( 1- (log.accuracy_rate/100)))}</TableCell>
-              <TableCell>{log.wrong_answer_list.length}</TableCell>
+              <TableCell>{log.total_number}</TableCell>
+              <TableCell>{log.wrong_answer_number}</TableCell>
               <TableCell>
                 <p>{log.accuracy_rate}%</p>
               </TableCell>
@@ -131,6 +220,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
           ))}
         </TableBody>
       </Table>
+      <div className="h-max-[300px] p-5" id="container"></div>
     </div>
   );
 }
