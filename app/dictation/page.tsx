@@ -1,17 +1,42 @@
-import { kv } from "@vercel/kv";
+"use client";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+interface Word {
+  second_category: [any];
+}
+export default function DictationPage() {
+  const [words, setWords] = useState<Word>();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-export default async function DictationPage() {
-  // const wordList = await getData();
-  const wordListIndex = (await kv.get("wordListIndex")) as Array<string>;
-  console.log(typeof wordListIndex);
+  useEffect(() => {
+    const fetchWords = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch("/api/words/getCategory");
+        const data = await res.json();
+        setWords(data[0]);
+        console.log(data[0]);
+      } catch (err: any) {
+        setError(err);
+      }
+      setLoading(false);
+    };
+    fetchWords();
+  }, []);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between md:p-24 p-8">
-      {wordListIndex.map((item) => (
-        <Link key={item} href={`dictation/pages/${item}`}>
-          章节{item}
-        </Link>
-      ))}
+      {words
+        ? words.second_category.map((word) => (
+            <Link key={word.name} href={`/dictation/pages/${word.name}`}>
+              Section {word.name}
+            </Link>
+          ))
+        : ""}
     </main>
   );
 }

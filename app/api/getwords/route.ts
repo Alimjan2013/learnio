@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { kv } from "@vercel/kv";
-export const runtime = "edge";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
+export const runtime = "edge";
 type Word = {
   word_id: string;
   word: string;
@@ -11,13 +11,17 @@ type Word = {
 };
 
 export async function POST(request: Request) {
+  const supabase = createClientComponentClient();
   const res = await request.json();
+  const secondary_category = decodeURIComponent(res.bookId);
   console.log(res.bookId);
-  const cart: Word[] = (await kv.get(
-    `测试/章节${decodeURIComponent(res.bookId)}`
-  )) as Word[];
 
-  const wordList: Word[] = Array.from(cart as Word[], (user) => ({
+  const { data, error } = await supabase
+    .from("words")
+    .select("*")
+    .eq("secondary_category", secondary_category);
+
+  const wordList: Word[] = Array.from(data as Word[], (user) => ({
     word_id: user.word_id,
     word: user.word,
     translation: user.translation,

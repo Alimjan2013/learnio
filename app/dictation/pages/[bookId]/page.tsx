@@ -1,8 +1,9 @@
+"use client";
 import Dictation from "@/components/tool/dictation";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronLeft, ArrowRightLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { kv } from "@vercel/kv";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,13 +12,27 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-export default async function DictationPage({
+interface Word {
+  second_category: [any];
+}
+export default function DictationPage({
   params,
 }: {
   params: { bookId: string };
 }) {
-  const wordListIndex = (await kv.get("wordListIndex")) as Array<string>;
+  const [wordListIndex, setWordListIndex] = useState<Word>();
+
+  useEffect(() => {
+    const fetchWords = async () => {
+      try {
+        const res = await fetch("/api/words/getCategory");
+        const data = await res.json();
+        setWordListIndex(data[0]);
+        console.log(data[0]);
+      } catch (err: any) {}
+    };
+    fetchWords();
+  }, []);
 
   return (
     <main className="flex min-h-screen flex-col items-center space-y-4 md:p-24 p-8">
@@ -27,7 +42,7 @@ export default async function DictationPage({
             <ChevronLeft className="mr-2 h-4 w-4" /> back
           </Button>
         </Link>
-        <div>章节{decodeURIComponent(params.bookId)}</div>
+        <div>{decodeURIComponent(params.bookId)}</div>
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Button variant="outline">
@@ -37,14 +52,14 @@ export default async function DictationPage({
           <DropdownMenuContent>
             <DropdownMenuLabel>change</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {wordListIndex.map((item) => (
+            {wordListIndex?.second_category.map((item: any) => (
               <DropdownMenuItem
                 disabled={
-                  decodeURIComponent(params.bookId) === item ? true : false
+                  decodeURIComponent(params.bookId) === item.name ? true : false
                 }
-                key={item}
+                key={item.name}
               >
-                <Link href={`/dictation/pages/${item}`}>章节{item}</Link>
+                <Link href={`/dictation/pages/${item.name}`}>{item.name}</Link>
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
