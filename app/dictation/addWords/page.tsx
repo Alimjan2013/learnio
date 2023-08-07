@@ -21,7 +21,7 @@ export default function AddWords() {
       body: JSON.stringify({
         list: list,
         primary_category: "测试书",
-        secondary_category: "测试章节二",
+        secondary_category: "测试章节五",
       }),
     });
     // Recommendation: handle errors

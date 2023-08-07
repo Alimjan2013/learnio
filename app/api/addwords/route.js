@@ -4,7 +4,10 @@ const makeWordList = (wordString, primary_category, secondary_category) => {
   const items = wordString.split("\n");
   const jsonArray = [];
   for (const item of items) {
-    const [word, translate] = item.split(" ");
+    const wordSplit = item.split(" ");
+    const translate = wordSplit[wordSplit.length - 1];
+    wordSplit.pop();
+    const word = wordSplit.join(" ");
     jsonArray.push({
       word: word,
       translation: translate,
