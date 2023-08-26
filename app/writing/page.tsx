@@ -47,7 +47,8 @@ export default function Home() {
     if (res.ok) {
       setIsLoading(false);
     }
-    handleChangeWriting(result.choices[0].message.content);
+    // handleChangeWriting(result.choices[0].message.content);
+    handleChangeWriting("Allowing employees to dress in (they way)【their own way】 is a method of managing that can express (personality and individual style)【their personality and individual style】, which could improve (working envirnment)【work environment】 (of activity)【and productivity】.");
     console.log(result);
   }
 
