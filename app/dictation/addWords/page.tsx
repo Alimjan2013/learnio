@@ -6,10 +6,15 @@ import { useState, useEffect } from "react";
 export default function AddWords() {
   // const wordList = await getData();
   const [listString, setListString] = useState("");
+  const [secondaryCategory, setSecondaryCategory] = useState("");
   const [spelling, setSpelling] = useState("");
 
   const handleListStringChange = (event: any) => {
     setListString(event.target.value);
+    // console.log(listString);
+  };
+  const handleSecondary = (event: any) => {
+    setSecondaryCategory(event.target.value);
     // console.log(listString);
   };
   async function postData(list: string) {
@@ -21,7 +26,7 @@ export default function AddWords() {
       body: JSON.stringify({
         list: list,
         primary_category: "测试书",
-        secondary_category: "测试章节五",
+        secondary_category: secondaryCategory,
       }),
     });
     // Recommendation: handle errors
@@ -39,11 +44,16 @@ export default function AddWords() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between md:p-24 p-8">
       <Label>New Word List</Label>
+      <Textarea
+        onChange={handleSecondary}
+        placeholder="Enter the secondary category"
+      />
       {listString}
       <Textarea
         onChange={handleListStringChange}
         placeholder="Enter the word list"
       />
+
       <button onClick={() => handleSubmit()}>send</button>
     </main>
   );
