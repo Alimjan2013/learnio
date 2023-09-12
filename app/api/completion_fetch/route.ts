@@ -42,5 +42,6 @@ this is Output Rule:
     body: JSON.stringify(openAIbody),
   });
   const Back = await AIReturn.json();
+  console.log(Back);
   return NextResponse.json(Back);
 }
