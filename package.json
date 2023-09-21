@@ -37,7 +37,7 @@
     "eslint-config-next": "^13.4.9",
     "lucide-react": "^0.252.0",
     "nanoid": "^4.0.2",
-    "next": "^13.4.12",
+    "next": "^13.5.1",
     "next-themes": "^0.2.1",
     "openai": "^3.3.0",
     "openai-edge": "^1.2.0",
