@@ -34,7 +34,7 @@ this is Output Rule:
     "Content-Type": "application/json",
     Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
   });
-  const url = "https://api.openai.com/v1/chat/completions";
+  const url = "https://cn.gptapi.asia/v1/chat/completions";
 
   const AIReturn = await fetch(url, {
     method: "POST",
