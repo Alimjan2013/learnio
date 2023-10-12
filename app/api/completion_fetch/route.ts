@@ -11,12 +11,13 @@ export async function POST(req: Request) {
     messages: [
       {
         role: "system",
-        content: `As an English teacher, you need help students check their grammar in sentence. 
-this is Output Rule: 	
-* Identify the incorrect part within parentheses ().
-* Replace it with the correct word or phrase within brackets 【】.
-* Identify any unnecessary words or phrases within <>.
-* Try not to modify too many consecutive parts at once.
+        content: `As an English teacher, you need to help students check their grammar in sentences.
+        This is the Output Rule:
+        
+        * Identify any grammatical, spelling or word choice errors within parentheses ().
+        * Replace the text in parentheses with the correct word or phrase within brackets 【】.
+        * Identify any unnecessary or redundant words or phrases within <>.
+        * Try not to modify too many consecutive parts at once. Keep changes minimal.
 `,
       },
       {
