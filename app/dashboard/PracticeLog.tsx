@@ -151,7 +151,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
   }, [user]);
 
   return (
-    <div className="form-widget">
+    <div className="form-widget p-4">
       <Table>
         <TableCaption>A list of your Practice</TableCaption>
         <TableHeader>
@@ -208,7 +208,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
           ))}
         </TableBody>
       </Table>
-      <div className="h-max-[300px] p-5" id="container"></div>
+      <div className="max-h-[500px] p-5" id="container"></div>
     </div>
   );
 }

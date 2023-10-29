@@ -25,7 +25,12 @@ export default async function Top100() {
   return (
     <div className="form-widget">
       <Dialog>
-        <DialogTrigger>Top 100 in 10 days</DialogTrigger>
+        <div className="m-3 flex justify-center">
+          <DialogTrigger>
+            <div className="text-center">Top 100 in 10 days</div>
+          </DialogTrigger>
+        </div>
+
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Top 100 in 10 days</DialogTitle>

@@ -7,7 +7,7 @@ export async function POST(req: Request) {
   const { prompt } = await req.json();
 
   const openAIbody = {
-    model: "gpt-3.5-turbo",
+    model: "gpt-4",
     messages: [
       {
         role: "system",
