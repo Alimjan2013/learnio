@@ -11,3 +11,5 @@ learn.iooslo.tech
 - deploy on Vercel
 - supabase for auth and db
 - tailwind Css, shadcn for ui
+
+some changes
